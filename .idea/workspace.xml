@@ -1,7 +1,11 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project version="4">
   <component name="ChangeListManager">
-    <list default="true" id="0548f816-55b8-4163-b42e-3933676dfa62" name="Default Changelist" comment="" />
+    <list default="true" id="6e6ad33d-1d5e-4e77-b71b-f325d490a5f6" name="Default Changelist" comment="">
+      <change beforePath="$PROJECT_DIR$/.idea/php.xml" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/vcs.xml" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+    </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
     <option name="HIGHLIGHT_NON_ACTIVE_CHANGELIST" value="false" />
@@ -19,7 +23,7 @@
       <path value="$PROJECT_DIR$/vendor/composer" />
     </include_path>
   </component>
-  <component name="ProjectId" id="26r7lnE5yXHjky7GEkHzlUthNyK" />
+  <component name="ProjectId" id="26rAgh1zLaU2Ihb0AZRPupruInU" />
   <component name="ProjectViewState">
     <option name="hideEmptyMiddlePackages" value="true" />
     <option name="showLibraryContents" value="true" />
@@ -28,19 +32,17 @@
     <property name="RunOnceActivity.OpenProjectViewOnStart" value="true" />
     <property name="RunOnceActivity.ShowReadmeOnStart" value="true" />
     <property name="WebServerToolWindowFactoryState" value="false" />
-    <property name="last_opened_file_path" value="$PROJECT_DIR$" />
     <property name="vue.rearranger.settings.migration" value="true" />
   </component>
   <component name="SpellCheckerSettings" RuntimeDictionaries="0" Folders="0" CustomDictionaries="0" DefaultDictionary="application-level" UseSingleDictionary="true" transferred="true" />
   <component name="TaskManager">
     <task active="true" id="Default" summary="Default task">
-      <changelist id="0548f816-55b8-4163-b42e-3933676dfa62" name="Default Changelist" comment="" />
-      <created>1648170004589</created>
+      <changelist id="6e6ad33d-1d5e-4e77-b71b-f325d490a5f6" name="Default Changelist" comment="" />
+      <created>1648171444030</created>
       <option name="number" value="Default" />
       <option name="presentableId" value="Default" />
-      <updated>1648170004589</updated>
-      <workItem from="1648170005920" duration="693000" />
-      <workItem from="1648170844090" duration="143000" />
+      <updated>1648171444030</updated>
+      <workItem from="1648171446016" duration="57000" />
     </task>
     <servers />
   </component>
