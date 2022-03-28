@@ -11,13 +11,17 @@ class PhpBadWords
     private $files = [];
     private $wordsData = [];
     private $punctuation = [32, 33, 34, 35, 36, 37, 38, 39, 40, 41, 42, 43, 44, 45, 46, 47, 58, 59, 60, 61, 62, 63, 64, 91, 92, 93, 94, 95, 96, 123, 124, 125, 126, 127];
+    private $output;
 
-    public function __construct($dir = '')
+    public function __construct($dir = '', $output = '')
     {
         if (!empty($dir)) {
             $this->dir = $dir;
         } else {
             $this->dir = dirname(__DIR__) . '/data';
+        }
+        if (!empty($output)) {
+            $this->output = $output;
         }
     }
 
@@ -55,6 +59,17 @@ class PhpBadWords
                         $this->wordsData[] = $newInfo;
                     }
                 }
+            }
+        }
+        if (!empty($this->output)) {
+            if (file_exists($this->output)) {
+                @unlink($this->output);
+            }
+            if (!file_exists(dirname($this->output))) {
+                mkdir(dirname($this->output), 777, true);
+            }
+            foreach ($this->wordsData as $word) {
+                file_put_contents($this->output, $word . PHP_EOL, FILE_APPEND);
             }
         }
         return $this->wordsData = array_filter(array_unique($this->wordsData));
