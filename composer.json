@@ -14,5 +14,10 @@
             "email": "171006308@qq.com"
         }
     ],
-    "require": {}
+    "require": {
+        "hashyoo/sensitive-words": "^0.0.6",
+        "wangningkai/simple-dictionary": "^1.0",
+        "guoyandong/filter_word_data": "^1.0",
+        "lustre/php-dfa-sensitive": "^1.4"
+    }
 }
