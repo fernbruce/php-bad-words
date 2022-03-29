@@ -14,7 +14,10 @@ $redis->connect('127.0.0.1', 6379);
 $config = [
     'dir' => __DIR__ . '/data',
     'output' => __DIR__ . '/output/wordsData.txt',
-    'table_name' => 'qs_badword',
+//    'table_name' => 'qs_badword',
+    'table_name' => 'yzm_article',
+    'syncToFile' => true,
+    'syncToDb' => true,
 ];
 /*$db = new Medoo([
     'database_type' => 'mysql',
@@ -35,3 +38,4 @@ $db = new Medoo([
     'port' => 3306,
 ]);
 $phpBadWords = new \Fernbruce\PhpBadWords\PhpBadWords(new RedisCache($redis), $db, $config);
+var_dump($phpBadWords->run());

@@ -32,6 +32,7 @@ class PhpBadWords
     public function run()
     {
         if (file_exists($this->config['dir'])) {
+            $this->files = [];
             foreach (scandir($this->config['dir']) as $file) {
                 if (!in_array($file, ['.', '..'])) {
                     $this->files[] = $this->config['dir'] . '/' . $file;
@@ -49,28 +50,46 @@ class PhpBadWords
             $handle = @fopen($file, 'r');
             if ($handle) {
                 while (($info = fgets($handle, 1024)) !== false) {
-                    $newInfo = $this->filterWord($info);
-                    if (!preg_match('/^\w+$/i', $newInfo) && !empty($newInfo)) {
-                        if (mb_strlen($newInfo) == 1) {
-                            $oneWord[] = $newInfo;
+                    $return = $this->filterWord($info);
+                    if ($return['success']) {
+                        $newInfo = $return['info'];
+                        if (!preg_match('/^\w+$/i', $newInfo) && !empty($newInfo)) {
+                            $this->wordsData[] = $newInfo;
                         }
-                        $this->wordsData[] = $newInfo;
                     }
                 }
             }
         }
-        if (!empty($this->config['output'])) {
-            if (file_exists($this->config['output'])) {
-                @unlink($this->config['output']);
-            }
-            if (!file_exists(dirname($this->config['output']))) {
-                mkdir(dirname($this->config['output']), 777, true);
-            }
-            foreach ($this->wordsData as $word) {
-                file_put_contents($this->config['output'], $word . PHP_EOL, FILE_APPEND);
+        if ($this->config['syncToFile']) {
+            if (!empty($this->config['output'])) {
+                if (file_exists($this->config['output'])) {
+                    @unlink($this->config['output']);
+                }
+                if (!file_exists(dirname($this->config['output']))) {
+                    mkdir(dirname($this->config['output']), 777, true);
+                }
+            } else {
+                return ['success' => false, 'info' => '发生错误，output未定义。'];
             }
         }
-        print_r(join(',', array_values(array_filter(array_unique($oneWord)))));
+        foreach ($this->wordsData as $word) {
+            if ($this->config['syncToFile']) {
+                file_put_contents($this->config['output'], $word . PHP_EOL, FILE_APPEND);
+            }
+            if ($this->config['syncToDb']) {
+                try {
+
+                    $this->db->insert($this->config['table_name'], [
+                        'title' => $word,
+//                        'created_at' => time(),
+//                        'updated_at' => time(),
+                    ]);
+                } catch (\Exception $e) {
+                    exit($e->getMessage());
+                }
+
+            }
+        }
         $this->wordsData = array_values(array_filter(array_unique($this->wordsData)));
         $this->cache->save($this->config['wordsKey'], $this->wordsData);
         return $this->wordsData;
@@ -88,7 +107,7 @@ class PhpBadWords
 
     public function create($info)
     {
-        $return = $this->filterWord($info);
+        $return = $this->filterWord($info, false);
         if (!$return['success']) {
             return $return;
         }
@@ -105,17 +124,19 @@ class PhpBadWords
         return ['success' => true, 'info' => '操作成功，敏感词已入库。'];
     }
 
-    private function filterWord($info)
+    private function filterWord($info, $fromRun = true)
     {
         $newInfo = preg_replace('/[^\x{4e00}-\x{9fa5}a-zA-Z0-9]/u', "", trim($info));
         if (preg_match('/^\w+$/i', $newInfo) || empty($newInfo)) {
             return ['success' => false, 'info' => '不能入库，因为敏感词中没有中文字符。'];
         }
-        if (empty($this->wordsData)) {
-            $this->wordsData = $this->getWords();
-        }
-        if (in_array($newInfo, $this->wordsData)) {
-            return ['success' => false, 'info' => '不能入库，因为词库中已经有这个敏感词。'];
+        if (!$fromRun) {
+            if (empty($this->wordsData)) {
+                $this->wordsData = $this->getWords();
+            }
+            if (in_array($newInfo, $this->wordsData)) {
+                return ['success' => false, 'info' => '不能入库，因为词库中已经有这个敏感词。'];
+            }
         }
         return ['success' => true, 'info' => $newInfo];
     }
@@ -132,7 +153,7 @@ class PhpBadWords
 
     public function update($id, $info)
     {
-        $return = $this->filterWord($info);
+        $return = $this->filterWord($info, false);
         if (!$return['success']) {
             return $return;
         }
