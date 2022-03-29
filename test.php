@@ -16,7 +16,7 @@ $config = [
     'output' => __DIR__ . '/output/wordsData.txt',
     'table_name' => 'qs_badword',
 ];
-$db = new Medoo([
+/*$db = new Medoo([
     'database_type' => 'mysql',
     'server' => '192.168.100.27',
     'database_name' => 'www_haolietou_com',
@@ -24,5 +24,14 @@ $db = new Medoo([
     'password' => 'ruifan123456',
     'charset' => 'utf8',
     'port' => 3307,
+]);*/
+$db = new Medoo([
+    'database_type' => 'mysql',
+    'server' => '127.0.0.1',
+    'database_name' => 'yii',
+    'username' => 'root',
+    'password' => '0000',
+    'charset' => 'utf8',
+    'port' => 3306,
 ]);
 $phpBadWords = new \Fernbruce\PhpBadWords\PhpBadWords(new RedisCache($redis), $db, $config);
