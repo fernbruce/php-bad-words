@@ -20,6 +20,14 @@
         "guoyandong/filter_word_data": "^1.0",
         "lustre/php-dfa-sensitive": "^1.4",
         "doctrine/cache": "^2.1",
-        "cakephp/database": "^4.3"
+        "cakephp/database": "^4.3",
+        "doctrine/dbal": "2.13.8",
+        "catfan/medoo": "^1.7"
+    },
+    "config": {
+        "allow-plugins": {
+            "yiisoft/yii2-composer": true,
+            "composer/installers": true
+        }
     }
 }

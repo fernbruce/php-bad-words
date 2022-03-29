@@ -2,35 +2,39 @@
 
 
 namespace Fernbruce\PhpBadWords;
-
+//vendor/yiisoft/yii2/caching/CacheInterface.php
 use DfaFilter\SensitiveHelper;
+use Fernbruce\PhpBadWords\Cache\RedisCache;
+use Medoo\Medoo;
 
 class PhpBadWords
 {
-    private $dir;
     private $files = [];
     private $wordsData = [];
-    private $punctuation = [32, 33, 34, 35, 36, 37, 38, 39, 40, 41, 42, 43, 44, 45, 46, 47, 58, 59, 60, 61, 62, 63, 64, 91, 92, 93, 94, 95, 96, 123, 124, 125, 126, 127];
-    private $output;
+    private $cache;
+    private $db;
+    private $config = [
+        'dir' => __DIR__ . '/../data',
+        'output' => '',
+        'wordsKey' => 'wordsData',
+        'replacement' => '*',
+    ];
 
-    public function __construct($dir = '', $output = '')
+    public function __construct($cache, $db, $config = [])
     {
-        if (!empty($dir)) {
-            $this->dir = $dir;
-        } else {
-            $this->dir = dirname(__DIR__) . '/data';
+        if (!empty($config)) {
+            $this->config = array_merge($this->config, $config);
         }
-        if (!empty($output)) {
-            $this->output = $output;
-        }
+        $this->cache = $cache;
+        $this->db = $db;
     }
 
     public function run()
     {
-        if (file_exists($this->dir)) {
-            foreach (scandir($this->dir) as $file) {
+        if (file_exists($this->config['dir'])) {
+            foreach (scandir($this->config['dir']) as $file) {
                 if (!in_array($file, ['.', '..'])) {
-                    $this->files[] = $this->dir . '/' . $file;
+                    $this->files[] = $this->config['dir'] . '/' . $file;
                 }
             }
             return $this->conbineWords();
@@ -39,41 +43,147 @@ class PhpBadWords
         }
     }
 
-    public function conbineWords()
+    private function conbineWords()
     {
         foreach ($this->files as $file) {
             $handle = @fopen($file, 'r');
             if ($handle) {
                 while (($info = fgets($handle, 1024)) !== false) {
-                    $newInfo = "";
-                    $itr = new \Fernbruce\PhpBadWords\CharIterator(trim($info));
-                    foreach ($itr as $char) {
-                        if (ord($char) < 128) {
-                            if (in_array(ord($char), $this->punctuation)) {
-                                continue;
-                            }
+                    $newInfo = $this->filterWord($info);
+                    if (!preg_match('/^\w+$/i', $newInfo) && !empty($newInfo)) {
+                        if (mb_strlen($newInfo) == 1) {
+                            $oneWord[] = $newInfo;
                         }
-                        $newInfo .= $char;
-                    }
-                    if (!preg_match('/^\w+$/i', $newInfo)) {
                         $this->wordsData[] = $newInfo;
                     }
                 }
             }
         }
-        if (!empty($this->output)) {
-            if (file_exists($this->output)) {
-                @unlink($this->output);
+        if (!empty($this->config['output'])) {
+            if (file_exists($this->config['output'])) {
+                @unlink($this->config['output']);
             }
-            if (!file_exists(dirname($this->output))) {
-                mkdir(dirname($this->output), 777, true);
+            if (!file_exists(dirname($this->config['output']))) {
+                mkdir(dirname($this->config['output']), 777, true);
             }
             foreach ($this->wordsData as $word) {
-                file_put_contents($this->output, $word . PHP_EOL, FILE_APPEND);
+                file_put_contents($this->config['output'], $word . PHP_EOL, FILE_APPEND);
             }
         }
-        return $this->wordsData = array_filter(array_unique($this->wordsData));
+        print_r(join(',', array_values(array_filter(array_unique($oneWord)))));
+        $this->wordsData = array_values(array_filter(array_unique($this->wordsData)));
+        $this->cache->save($this->config['wordsKey'], $this->wordsData);
+        return $this->wordsData;
     }
 
+    public function getWords()
+    {
+        if (!($this->wordsData = $this->cache->fetch($this->config['wordsKey']))) {
+            //缓存中不存在
+            $this->run();
+            $this->wordsData = array_filter(explode(PHP_EOL, file_get_contents($this->config['output'])));
+        }
+        return $this->wordsData;
+    }
+
+    public function create($info)
+    {
+        $return = $this->filterWord($info);
+        if (!$return['success']) {
+            return $return;
+        }
+        $newInfo = $return['info'];
+
+        $this->db->insert($this->config['table_name'], [
+            'badword' => $newInfo,
+            'replacement' => $this->config['replacement'],
+            'created_at' => time(),
+            'updated_at' => time(),
+        ]);
+        $this->wordsData[] = $newInfo;
+        $this->cache->save($this->config['wordsKey'], array_values($this->wordsData));
+        return ['success' => true, 'info' => '操作成功，敏感词已入库。'];
+    }
+
+    private function filterWord($info)
+    {
+        $newInfo = preg_replace('/[^\x{4e00}-\x{9fa5}a-zA-Z0-9]/u', "", trim($info));
+        if (preg_match('/^\w+$/i', $newInfo) || empty($newInfo)) {
+            return ['success' => false, 'info' => '不能入库，因为敏感词中没有中文字符。'];
+        }
+        if (empty($this->wordsData)) {
+            $this->wordsData = $this->getWords();
+        }
+        if (in_array($newInfo, $this->wordsData)) {
+            return ['success' => false, 'info' => '不能入库，因为词库中已经有这个敏感词。'];
+        }
+        return ['success' => true, 'info' => $newInfo];
+    }
+
+    private function getWordById($id)
+    {
+        $data = $this->db->select($this->config['table_name'], [
+            'badword'
+        ], [
+            'id' => $id
+        ]);
+        return $data[0]['badword'];
+    }
+
+    public function update($id, $info)
+    {
+        $return = $this->filterWord($info);
+        if (!$return['success']) {
+            return $return;
+        }
+        $newInfo = $return['info'];
+        $oldInfo = $this->getWordById($id);
+        if (empty($oldInfo)) {
+            return ['success' => false, 'info' => "更新失败，在词库里面没有找到id:{$id}所对应的敏感词。"];
+        }
+
+        if (empty($this->wordsData)) {
+            $this->wordsData = $this->getWords();
+        }
+        if (($key = array_search($oldInfo, $this->wordsData)) !== false) {
+            $this->wordsData[$key] = $newInfo;
+            $this->cache->save($this->config['wordsKey'], array_values($this->wordsData));
+        }
+
+        $this->db->update($this->config['table_name'], [
+            'badword' => $newInfo,
+            'updated_at' => time(),
+        ], [
+            'id' => $id
+        ]);
+
+        return ['success' => true, 'info' => '操作成功，敏感词已更新'];
+
+    }
+
+    public function delete($id)
+    {
+        $id = (int)$id;
+        $oldInfo = $this->getWordById($id);
+
+        if (empty($oldInfo)) {
+            return ['success' => false, 'info' => '删除失败，在词库里面没有找到之前的敏感词。'];
+        }
+        $this->db->delete($this->config['table_name'], [
+            'id' => $id
+        ]);
+
+        if (empty($this->wordsData)) {
+            $this->wordsData = $this->getWords();
+        }
+
+        if (($key = array_search($oldInfo, $this->wordsData)) !== false) {
+            unset($this->wordsData[$key]);
+            $this->cache->save($this->config['wordsKey'], array_values($this->wordsData));
+        }
+
+        return ['success' => true, 'info' => '删除关键词成功'];
+
+    }
 
 }

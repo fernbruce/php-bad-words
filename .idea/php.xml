@@ -19,6 +19,17 @@
       <path value="$PROJECT_DIR$/vendor/wangningkai/simple-dictionary" />
       <path value="$PROJECT_DIR$/vendor/guoyandong/filter_word_data" />
       <path value="$PROJECT_DIR$/vendor/lustre/php-dfa-sensitive" />
+      <path value="$PROJECT_DIR$/vendor/psr/log" />
+      <path value="$PROJECT_DIR$/vendor/doctrine/cache" />
+      <path value="$PROJECT_DIR$/vendor/cakephp/datasource" />
+      <path value="$PROJECT_DIR$/vendor/cakephp/utility" />
+      <path value="$PROJECT_DIR$/vendor/cakephp/core" />
+      <path value="$PROJECT_DIR$/vendor/cakephp/database" />
+      <path value="$PROJECT_DIR$/vendor/doctrine/deprecations" />
+      <path value="$PROJECT_DIR$/vendor/doctrine/event-manager" />
+      <path value="$PROJECT_DIR$/vendor/doctrine/dbal" />
+      <path value="$PROJECT_DIR$/vendor/kohana/core" />
+      <path value="$PROJECT_DIR$/vendor/catfan/medoo" />
     </include_path>
   </component>
   <component name="PhpProjectSharedConfiguration" php_language_level="7.2" />

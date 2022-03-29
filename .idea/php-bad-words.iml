@@ -22,6 +22,17 @@
       <excludeFolder url="file://$MODULE_DIR$/vendor/wangningkai/simple-dictionary" />
       <excludeFolder url="file://$MODULE_DIR$/vendor/guoyandong/filter_word_data" />
       <excludeFolder url="file://$MODULE_DIR$/vendor/lustre/php-dfa-sensitive" />
+      <excludeFolder url="file://$MODULE_DIR$/vendor/psr/log" />
+      <excludeFolder url="file://$MODULE_DIR$/vendor/doctrine/cache" />
+      <excludeFolder url="file://$MODULE_DIR$/vendor/cakephp/datasource" />
+      <excludeFolder url="file://$MODULE_DIR$/vendor/cakephp/utility" />
+      <excludeFolder url="file://$MODULE_DIR$/vendor/cakephp/core" />
+      <excludeFolder url="file://$MODULE_DIR$/vendor/cakephp/database" />
+      <excludeFolder url="file://$MODULE_DIR$/vendor/doctrine/deprecations" />
+      <excludeFolder url="file://$MODULE_DIR$/vendor/doctrine/event-manager" />
+      <excludeFolder url="file://$MODULE_DIR$/vendor/doctrine/dbal" />
+      <excludeFolder url="file://$MODULE_DIR$/vendor/kohana/core" />
+      <excludeFolder url="file://$MODULE_DIR$/vendor/catfan/medoo" />
     </content>
     <orderEntry type="inheritedJdk" />
     <orderEntry type="sourceFolder" forTests="false" />
