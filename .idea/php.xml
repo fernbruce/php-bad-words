@@ -28,7 +28,6 @@
       <path value="$PROJECT_DIR$/vendor/doctrine/deprecations" />
       <path value="$PROJECT_DIR$/vendor/doctrine/event-manager" />
       <path value="$PROJECT_DIR$/vendor/doctrine/dbal" />
-      <path value="$PROJECT_DIR$/vendor/kohana/core" />
       <path value="$PROJECT_DIR$/vendor/catfan/medoo" />
     </include_path>
   </component>

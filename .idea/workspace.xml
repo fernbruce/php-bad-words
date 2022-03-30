@@ -2,16 +2,10 @@
 <project version="4">
   <component name="ChangeListManager">
     <list default="true" id="6e6ad33d-1d5e-4e77-b71b-f325d490a5f6" name="Default Changelist" comment="">
+      <change beforePath="$PROJECT_DIR$/.gitignore" beforeDir="false" afterPath="$PROJECT_DIR$/.gitignore" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/php-bad-words.iml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/php-bad-words.iml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/php.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/php.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/composer.json" beforeDir="false" afterPath="$PROJECT_DIR$/composer.json" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/composer.lock" beforeDir="false" afterPath="$PROJECT_DIR$/composer.lock" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/data/广告.txt" beforeDir="false" afterPath="$PROJECT_DIR$/data/广告.txt" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/output/wordsData.txt" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/CharIterator.php" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/PhpBadWords.php" beforeDir="false" afterPath="$PROJECT_DIR$/src/PhpBadWords.php" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/test.php" beforeDir="false" afterPath="$PROJECT_DIR$/test.php" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -53,7 +47,6 @@
       <path value="$PROJECT_DIR$/vendor/doctrine/deprecations" />
       <path value="$PROJECT_DIR$/vendor/doctrine/event-manager" />
       <path value="$PROJECT_DIR$/vendor/doctrine/dbal" />
-      <path value="$PROJECT_DIR$/vendor/kohana/core" />
       <path value="$PROJECT_DIR$/vendor/catfan/medoo" />
     </include_path>
   </component>
@@ -157,7 +150,7 @@
         </line-breakpoint>
         <line-breakpoint enabled="true" type="php">
           <url>file://$PROJECT_DIR$/src/PhpBadWords.php</url>
-          <line>134</line>
+          <line>155</line>
           <option name="timeStamp" value="16" />
         </line-breakpoint>
       </breakpoints>

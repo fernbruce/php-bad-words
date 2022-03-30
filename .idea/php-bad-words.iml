@@ -31,7 +31,6 @@
       <excludeFolder url="file://$MODULE_DIR$/vendor/doctrine/deprecations" />
       <excludeFolder url="file://$MODULE_DIR$/vendor/doctrine/event-manager" />
       <excludeFolder url="file://$MODULE_DIR$/vendor/doctrine/dbal" />
-      <excludeFolder url="file://$MODULE_DIR$/vendor/kohana/core" />
       <excludeFolder url="file://$MODULE_DIR$/vendor/catfan/medoo" />
     </content>
     <orderEntry type="inheritedJdk" />
