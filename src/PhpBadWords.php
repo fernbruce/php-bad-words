@@ -5,6 +5,8 @@ namespace Fernbruce\PhpBadWords;
 //vendor/yiisoft/yii2/caching/CacheInterface.php
 use DfaFilter\SensitiveHelper;
 use Fernbruce\PhpBadWords\Cache\RedisCache;
+use Fernbruce\PhpBadWords\DfaFilter\Exceptions\PdsBusinessException;
+use Fernbruce\PhpBadWords\DfaFilter\Exceptions\PdsSystemException;
 use Medoo\Medoo;
 
 class PhpBadWords
@@ -13,20 +15,24 @@ class PhpBadWords
     private $wordsData = [];
     private $cache;
     private $db;
+    private $filterHandler;
     private $config = [
         'dir' => __DIR__ . '/../data',
         'output' => '',
         'wordsKey' => 'wordsData',
         'replacement' => '*',
+        'syncToFile' => true,
+        'syncToDb' => false,
     ];
 
-    public function __construct($cache, $db, $config = [])
+    public function __construct($cache, $db, $filterHandler, $config = [])
     {
         if (!empty($config)) {
             $this->config = array_merge($this->config, $config);
         }
         $this->cache = $cache;
         $this->db = $db;
+        $this->filterHandler = $filterHandler;
     }
 
     public function run()
@@ -40,7 +46,7 @@ class PhpBadWords
             }
             return $this->conbineWords();
         } else {
-            return [];
+            return ['success' => false, 'info' => '目录下面没有文件'];
         }
     }
 
@@ -60,6 +66,10 @@ class PhpBadWords
                 }
             }
         }
+
+        $this->wordsData = array_values(array_filter(array_unique($this->wordsData)));
+        $this->cache->save($this->config['wordsKey'], $this->wordsData);
+
         if ($this->config['syncToFile']) {
             if (!empty($this->config['output'])) {
                 if (file_exists($this->config['output'])) {
@@ -80,9 +90,10 @@ class PhpBadWords
                 try {
 
                     $this->db->insert($this->config['table_name'], [
-                        'title' => $word,
-//                        'created_at' => time(),
-//                        'updated_at' => time(),
+                        'badword' => $word,
+                        'replacement' => '*',
+                        'created_at' => time(),
+                        'updated_at' => time(),
                     ]);
                 } catch (\Exception $e) {
                     exit($e->getMessage());
@@ -90,12 +101,11 @@ class PhpBadWords
 
             }
         }
-        $this->wordsData = array_values(array_filter(array_unique($this->wordsData)));
-        $this->cache->save($this->config['wordsKey'], $this->wordsData);
+
         return $this->wordsData;
     }
 
-    public function getWords()
+    private function getWords()
     {
         if (!($this->wordsData = $this->cache->fetch($this->config['wordsKey']))) {
             //缓存中不存在
@@ -116,6 +126,7 @@ class PhpBadWords
         $this->db->insert($this->config['table_name'], [
             'badword' => $newInfo,
             'replacement' => $this->config['replacement'],
+            'is_from' => 1,
             'created_at' => time(),
             'updated_at' => time(),
         ]);
@@ -148,7 +159,7 @@ class PhpBadWords
         ], [
             'id' => $id
         ]);
-        return $data[0]['badword'];
+        return $data[0]['badword'] ?? '';
     }
 
     public function update($id, $info)
@@ -173,6 +184,7 @@ class PhpBadWords
 
         $this->db->update($this->config['table_name'], [
             'badword' => $newInfo,
+            'is_from' => 1,
             'updated_at' => time(),
         ], [
             'id' => $id
@@ -205,6 +217,74 @@ class PhpBadWords
 
         return ['success' => true, 'info' => '删除关键词成功'];
 
+    }
+
+    private function setTree()
+    {
+        if ($this->wordsData = $this->cache->fetch($this->config['wordsKey'])) {
+            return $this->filterHandler->setTree($this->wordsData);
+        }
+        throw new PdsBusinessException('请先初始化词库到缓存中', PdsBusinessException::CANNOT_FIND_CACHE);
+    }
+
+    public function islegal($content)
+    {
+        try {
+            return [
+                'success' => true,
+                'info' => $this->setTree()->islegal($content)
+            ];
+        } catch (PdsBusinessException $e) {
+            return [
+                'success' => false,
+                'info' => $e->getMessage()
+            ];
+        }
+    }
+
+    public function replace($content, $replaceChar = '', $repeat = false, $matchType = 1)
+    {
+        try {
+            return [
+                'success' => true,
+                'info' => $this->setTree()->replace($content, $replaceChar, $repeat, $matchType),
+            ];
+        } catch (PdsBusinessException $e) {
+            return [
+                'success' => false,
+                'info' => $e->getMessage()
+            ];
+        }
+    }
+
+    public function mark($content, $sTag, $eTag, $matchType = 1)
+    {
+        try {
+            return [
+                'success' => true,
+                'info' => $this->setTree()->mark($content, $sTag, $eTag, $matchType),
+            ];
+        } catch (PdsBusinessException $e) {
+            return [
+                'success' => false,
+                'info' => $e->getMessage()
+            ];
+        }
+    }
+
+    public function getBadWord($content, $matchType = 1, $wordNum = 0)
+    {
+        try {
+            return [
+                'success' => true,
+                'info' => $this->setTree()->getBadWord($content, $matchType, $wordNum),
+            ];
+        } catch (PdsBusinessException $e) {
+            return [
+                'success' => false,
+                'info' => $e->getMessage()
+            ];
+        }
     }
 
 }

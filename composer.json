@@ -15,7 +15,6 @@
         }
     ],
     "require": {
-        "lustre/php-dfa-sensitive": "^1.4",
         "doctrine/cache": "^2.1",
         "catfan/medoo": "^1.7"
     }
