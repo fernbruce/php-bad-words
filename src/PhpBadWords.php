@@ -2,12 +2,8 @@
 
 
 namespace Fernbruce\PhpBadWords;
-//vendor/yiisoft/yii2/caching/CacheInterface.php
-use DfaFilter\SensitiveHelper;
-use Fernbruce\PhpBadWords\Cache\RedisCache;
+
 use Fernbruce\PhpBadWords\DfaFilter\Exceptions\PdsBusinessException;
-use Fernbruce\PhpBadWords\DfaFilter\Exceptions\PdsSystemException;
-use Medoo\Medoo;
 
 class PhpBadWords
 {
@@ -35,6 +31,10 @@ class PhpBadWords
         $this->filterHandler = $filterHandler;
     }
 
+    /**
+     * 初始化词库到redis和db
+     * @return array
+     */
     public function run()
     {
         if (file_exists($this->config['dir'])) {
@@ -50,6 +50,10 @@ class PhpBadWords
         }
     }
 
+    /**
+     * 合并多个文件里面的关键词
+     * @return array
+     */
     private function conbineWords()
     {
         foreach ($this->files as $file) {
@@ -105,6 +109,10 @@ class PhpBadWords
         return $this->wordsData;
     }
 
+    /**
+     * 从缓存里面获取词库，如果没有初始化词库
+     * @return false|string[]
+     */
     private function getWords()
     {
         if (!($this->wordsData = $this->cache->fetch($this->config['wordsKey']))) {
@@ -115,6 +123,11 @@ class PhpBadWords
         return $this->wordsData;
     }
 
+    /**
+     * 添加一个敏感词到db
+     * @param $info
+     * @return array
+     */
     public function create($info)
     {
         $return = $this->filterWord($info, false);
@@ -135,6 +148,12 @@ class PhpBadWords
         return ['success' => true, 'info' => '操作成功，敏感词已入库。'];
     }
 
+    /**
+     * 判断敏感词是否符合入库条件
+     * @param $info
+     * @param bool $fromRun
+     * @return array
+     */
     private function filterWord($info, $fromRun = true)
     {
         $newInfo = preg_replace('/[^\x{4e00}-\x{9fa5}a-zA-Z0-9]/u', "", trim($info));
@@ -152,6 +171,11 @@ class PhpBadWords
         return ['success' => true, 'info' => $newInfo];
     }
 
+    /**
+     * 通过id从db里面查找敏感词
+     * @param $id
+     * @return mixed|string
+     */
     private function getWordById($id)
     {
         $data = $this->db->select($this->config['table_name'], [
@@ -162,6 +186,12 @@ class PhpBadWords
         return $data[0]['badword'] ?? '';
     }
 
+    /**
+     * 根据id修改一个敏感词
+     * @param $id
+     * @param $info
+     * @return array
+     */
     public function update($id, $info)
     {
         $return = $this->filterWord($info, false);
@@ -194,6 +224,11 @@ class PhpBadWords
 
     }
 
+    /**
+     * 通过id从db里面删除里面关键词
+     * @param $id
+     * @return array
+     */
     public function delete($id)
     {
         $id = (int)$id;
@@ -219,6 +254,11 @@ class PhpBadWords
 
     }
 
+    /**
+     * 生成敏感词树
+     * @return mixed
+     * @throws PdsBusinessException
+     */
     private function setTree()
     {
         if ($this->wordsData = $this->cache->fetch($this->config['wordsKey'])) {
@@ -227,6 +267,11 @@ class PhpBadWords
         throw new PdsBusinessException('请先初始化词库到缓存中', PdsBusinessException::CANNOT_FIND_CACHE);
     }
 
+    /**
+     * 判断文本里面是否包含敏感词信息
+     * @param $content
+     * @return array
+     */
     public function islegal($content)
     {
         try {
@@ -242,6 +287,14 @@ class PhpBadWords
         }
     }
 
+    /**
+     * 替换文本中的敏感词
+     * @param $content
+     * @param string $replaceChar
+     * @param false $repeat
+     * @param int $matchType
+     * @return array
+     */
     public function replace($content, $replaceChar = '', $repeat = false, $matchType = 1)
     {
         try {
@@ -257,6 +310,14 @@ class PhpBadWords
         }
     }
 
+    /**
+     * 标记文文本中的敏感词
+     * @param $content
+     * @param $sTag
+     * @param $eTag
+     * @param int $matchType
+     * @return array
+     */
     public function mark($content, $sTag, $eTag, $matchType = 1)
     {
         try {
@@ -272,6 +333,13 @@ class PhpBadWords
         }
     }
 
+    /**
+     * 获取文本中的敏感词
+     * @param $content
+     * @param int $matchType
+     * @param int $wordNum
+     * @return array
+     */
     public function getBadWord($content, $matchType = 1, $wordNum = 0)
     {
         try {
@@ -286,5 +354,4 @@ class PhpBadWords
             ];
         }
     }
-
 }

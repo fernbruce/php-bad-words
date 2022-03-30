@@ -4,26 +4,30 @@ require __DIR__ . '/vendor/autoload.php';
 use Fernbruce\PhpBadWords\Cache\RedisCache;
 use Medoo\Medoo;
 
-$redis = new \Redis();
-$redis->connect('127.0.0.1', 6379);
-$config = [
-    'dir' => __DIR__ . '/data',
-    'output' => __DIR__ . '/output/wordsData.txt',
-    'table_name' => 'qs_badword',
-    'syncToFile' => false,
-    'syncToDb' => false,
-];
-$db = new Medoo([
-    'database_type' => 'mysql',
-    'server' => '192.168.100.27',
-    'database_name' => 'www_haolietou_com',
-    'username' => 'ruifan',
-    'password' => 'ruifan123456',
-    'charset' => 'utf8',
-    'port' => 3307,
-]);
-$filterHandle = \Fernbruce\PhpBadWords\DfaFilter\SensitiveHelper::init();
-$phpBadWords = new \Fernbruce\PhpBadWords\PhpBadWords(new RedisCache($redis), $db, $filterHandle, $config);
+try {
+    $redis = new \Redis();
+    $redis->connect('127.0.0.1', 6379);
+    $config = [
+        'dir' => __DIR__ . '/data',
+        'output' => __DIR__ . '/output/wordsData.txt',
+        'table_name' => 'qs_badword',
+        'syncToFile' => false,
+        'syncToDb' => false,
+    ];
+    $db = new Medoo([
+        'database_type' => 'mysql',
+        'server' => '192.168.100.27',
+        'database_name' => 'www_haolietou_com',
+        'username' => 'ruifan',
+        'password' => 'ruifan123456',
+        'charset' => 'utf8',
+        'port' => 3307,
+    ]);
+    $filterHandle = \Fernbruce\PhpBadWords\DfaFilter\SensitiveHelper::init();
+    $phpBadWords = new \Fernbruce\PhpBadWords\PhpBadWords(new RedisCache($redis), $db, $filterHandle, $config);
+} catch (Exception $e) {
+    exit(iconv('gbk', 'utf-8', $e->getMessage()));
+}
 
 //合并去重，初始化词库到文件，db和cache
 //$phpBadWords->run();
@@ -31,8 +35,8 @@ $phpBadWords = new \Fernbruce\PhpBadWords\PhpBadWords(new RedisCache($redis), $d
 //创建敏感词
 //print_r($phpBadWords->create('敏感词'));
 //根据id删除敏感词
-$id=16787;
-print_r($phpBadWords->delete($id));
+//$id=16787;
+//print_r($phpBadWords->delete($id));
 
 //修改原有敏感词
 //$id = 16787;
@@ -55,6 +59,7 @@ $content = '疫情阴霾之下，中国经济第一强省，率先出招了！
 当不少地方还在纠结如何精细化防疫的时候，广东再次先行一步，开始着手激发市场主体活力。
 
 一手抓防控，一手抓经济。一场硬核“突围战”，正式打响了！';
+print_r($phpBadWords->islegal($content));
 //查找语句中的敏感词
 print_r($phpBadWords->getBadWord($content));
 //标记敏感词

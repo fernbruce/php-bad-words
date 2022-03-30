@@ -5,9 +5,7 @@
       <change beforePath="$PROJECT_DIR$/.idea/php-bad-words.iml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/php-bad-words.iml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/php.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/php.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/composer.json" beforeDir="false" afterPath="$PROJECT_DIR$/composer.json" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/composer.lock" beforeDir="false" afterPath="$PROJECT_DIR$/composer.lock" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/output/wordsData.txt" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/README.md" beforeDir="false" afterPath="$PROJECT_DIR$/README.md" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/PhpBadWords.php" beforeDir="false" afterPath="$PROJECT_DIR$/src/PhpBadWords.php" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/test.php" beforeDir="false" afterPath="$PROJECT_DIR$/test.php" afterDir="false" />
     </list>
@@ -90,6 +88,7 @@
       <updated>1648171444030</updated>
       <workItem from="1648171446016" duration="42891000" />
       <workItem from="1648443254133" duration="11320000" />
+      <workItem from="1648633188666" duration="1758000" />
     </task>
     <servers />
   </component>
@@ -158,10 +157,5 @@
         </line-breakpoint>
       </breakpoints>
     </breakpoint-manager>
-    <watches-manager>
-      <configuration name="PhpLocalRunConfigurationType">
-        <watch expression="$itr" />
-      </configuration>
-    </watches-manager>
   </component>
 </project>
