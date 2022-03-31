@@ -42,7 +42,7 @@ try {
 //$id = 16787;
 //print_r($phpBadWords->update($id, '新敏感词'));
 
-$content = '疫情阴霾之下，中国经济第一强省，率先出招了！
+$content = '疫情阴霾之下，中国驰名经济第一强省，率先出招了！
 
 3月25日，广东省拿出了自2020年疫情以来最猛的纾困措施，一口气公布了3份文件、8项行动，涉及工业和服务业。
 
@@ -59,12 +59,12 @@ $content = '疫情阴霾之下，中国经济第一强省，率先出招了！
 当不少地方还在纠结如何精细化防疫的时候，广东再次先行一步，开始着手激发市场主体活力。
 
 一手抓防控，一手抓经济。一场硬核“突围战”，正式打响了！';
-print_r($phpBadWords->islegal($content));
+//print_r($phpBadWords->islegal($content));
 //查找语句中的敏感词
-print_r($phpBadWords->getBadWord($content));
+print_r($phpBadWords->getBadWord($content, 2,1));
 //标记敏感词
-print_r($phpBadWords->mark($content, '<mark>', '</mark>'));
-echo PHP_EOL . '------------------------------------------' . PHP_EOL;
+//print_r($phpBadWords->mark($content, '<mark>', '</mark>'));
+//echo PHP_EOL . '------------------------------------------' . PHP_EOL;
 //替换敏感词
-print_r($phpBadWords->replace($content, '*', true));
+//print_r($phpBadWords->replace($content, '*', true));
 
